@@ -3,6 +3,7 @@ import numpy as np
 from utility import loadPickle, writePickle
 from utility import Data
 from sklearn.cluster import KMeans
+from sklearn.neighbors import KDTree
 
 
 def extractSIFTFeature(grayscaleImage):
@@ -47,7 +48,7 @@ def writeDescriptors():
                     filepath.split('/')[-1].split('_')[-1])
 
 
-def createBagOfWords():
+def createBagOfWords(num_vocabs=500):
     descs1 = np.array(loadPickle('./descriptors/descs_1'))
     descs2 = np.array(loadPickle('./descriptors/descs_2'))
     descs3 = np.array(loadPickle('./descriptors/descs_3'))
@@ -56,13 +57,40 @@ def createBagOfWords():
 
     X = np.concatenate((descs1, descs2, descs3, descs4, descs5), axis=0)
 
-    kmeans = KMeans(n_clusters=500, random_state=42)
+    kmeans = KMeans(n_clusters=num_vocabs, random_state=42)
     kmeans.fit(X)
 
     return kmeans
 
 
+def encodeImage(img, bow):
+    # extract sift features
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    _, descs = extractSIFTFeature(gray)
+
+    # create histogram of visual words
+    histOfVW = np.zeros((500))
+    if descs is None:
+        return histOfVW
+
+    # increase bins of historgram
+    tree = KDTree(bow)
+    for desc in descs:
+        _, idx = tree.query([desc], k=1)
+        histOfVW[idx] += 1
+
+    return histOfVW
+
+
+def encodeBatch(data_batch, bow):
+    batch_encoded = []
+    for row in data_batch['data']:
+        img = data2image(row)
+        batch_encoded.append(encodeImage(img, bow))
+
+    return batch_encoded
+
+
 if __name__ == '__main__':
-    # writeDescriptors()
-    kmeans = loadPickle('./bag-of-words/bow_500')
-    print kmeans.cluster_centers_
+    kmeans = createBagOfWords(num_vocabs=1000)
+    writePickle(kmeans, './bag-of-words/bow_1000')
