@@ -4,16 +4,18 @@ import tkFileDialog as filedialog
 import ttk
 from utility import loadPickle
 import cv2
-
+from navie_bayes import NaiveBayes
+from bow import encodeImage
 
 class GUI(object):
 
-    def __init__(self, models, class_labels):
+    def __init__(self, models, class_labels, bow):
         self.root = Tk()
         self.setup_gui()
         self.models = models
         self.selected_model = models[0]
-        self.classifier_labels = class_labels
+        self.classifier_labels = class_labels        
+        self.bow = bow
 
     def setup_gui(self):
 
@@ -29,7 +31,7 @@ class GUI(object):
 
         self.classifier = ttk.Combobox(self.root)                       
         self.classifier['value'] = ("Naives Bayes","SVM")
-        self.classifier.bind("<<ComboboxSelected>>", self.selected_model())
+        self.classifier.bind("<<ComboboxSelected>>", self.set_selected_model)
         self.classifier.grid(row=1, column=1, padx=2, pady=4)
         self.classifier.current(0)
 
@@ -43,7 +45,7 @@ class GUI(object):
         self.class_result = Label(self.root, text="Class : ")
         self.class_result.grid(row=3)
 
-    def set_select_model(self, event):
+    def set_selected_model(self, event):
         self.selected_model = self.models[self.classifier.get()]
 
     def choose_directory(self, event):
@@ -55,11 +57,14 @@ class GUI(object):
         file = filedialog.askopenfilename()
         img = ImageTk.PhotoImage(Image.open(file))
         self.panel.configure(image=img)
-        panel.image = img
+        self.panel.image = img
+        print "[!] Read image", file
         image = cv2.imread(file)
-        result = model.classify(image)
+        image = encodeImage(image, self.bow)
+        result = self.selected_model.classify(image)        
         class_label = self.classifier_labels[result]
-        self.class_result.configure(text="Class : " + class_label)
+        print "Class label : ", class_label
+        self.class_result.config(text="Class : " + class_label)
 
 
 
@@ -68,10 +73,12 @@ class GUI(object):
 
 
 if __name__ == '__main__':
-    bow = loadPickle('./bag-of-words/bow_500').cluster_centers_
-    class_labels = loadPickle('./cifar-10-batches-py/batches.meta')
-    print class_labels
+    print "[+] Read bag of word"
+    bow = loadPickle('./bag-of-words/bow_500').cluster_centers_    
+    class_labels = loadPickle('./cifar-10-batches-py/batches.meta')['label_names']
+    print "[+] Load set of labels : ", class_labels
+    print "[+] Load trained naive bayes model"
     nb = loadPickle('./models/naive_bayes/multinomial_bayes_bow_500')
     models = [nb]
-    gui = GUI(models, class_labels)
+    gui = GUI(models, class_labels, bow)
     gui.run()
