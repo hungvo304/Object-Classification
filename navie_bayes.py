@@ -3,6 +3,7 @@ from bow import encodeBatch, encodeImage
 from utility import loadPickle, writePickle
 from sklearn.metrics import accuracy_score
 
+
 class NaiveBayes(object):
 
     def __init__(self, bow):
@@ -30,30 +31,29 @@ class NaiveBayes(object):
             trn4['labels'] + \
             trn5['labels']
         return trn_encoded, labels
-    
-    def train(self):        
+
+    def train(self):
         trn_encoded, labels = self.get_train_data_and_label()
         print "[+] Training model"
         self.model.fit(trn_encoded, labels)
 
-
     def test_accuracy(self, tst_path='./cifar-10-batches-py/test_batch'):
-        print "[!] Calculating accuracy : " 
-        tst = loadPickle(tst_path)        
+        print "[!] Calculating accuracy : "
+        tst = loadPickle(tst_path)
         tst_encoded = encodeBatch(tst, self.bow)
         y_pred = self.model.predict(tst_encoded)
         print '[+] Test Accuracy', accuracy_score(y_pred, tst['labels']) * 100
-    
+
     def classify(self, img):
         img_encode = encodeImage(img, self.bow)
-        y_pred = self.model.predict(img_encode)
+        img_encode.reshape(1, -1)
+        y_pred = self.model.predict([img_encode])[0]
         print "[+] Image class : ", y_pred
         return y_pred
 
 
-
 if __name__ == '__main__':
-    bow = loadPickle('./bag-of-words/bow_500').cluster_centers_    
+    bow = loadPickle('./bag-of-words/bow_500').cluster_centers_
     bayes = NaiveBayes(bow)
     bayes.train()
     bayes.test_accuracy()
