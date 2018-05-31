@@ -5,6 +5,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import GridSearchCV
 from bow import encodeBatch
 from utility import loadPickle, writePickle
+import numpy as np
 
 
 def getTrainDataAndLabel(bow):
@@ -20,7 +21,7 @@ def getTrainDataAndLabel(bow):
                                   encodeBatch(trn3, bow),
                                   encodeBatch(trn4, bow),
                                   encodeBatch(trn5, bow)))
-    print trn_encoded.shape
+    # print trn_encoded.shape
 
     labels = \
         trn1['labels'] + \

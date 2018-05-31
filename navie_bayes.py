@@ -2,6 +2,7 @@ from sklearn.naive_bayes import MultinomialNB
 from bow import encodeBatch, encodeImage
 from utility import loadPickle, writePickle
 from sklearn.metrics import accuracy_score
+import numpy as np
 
 
 class NaiveBayes(object):

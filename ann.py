@@ -38,7 +38,7 @@ if __name__ == '__main__':
         dev_data = trn_encoded[test_index]
         dev_labels = labels[test_index]
 
-    print trn_data.shape, dev_data.shape
+    # print trn_data.shape, dev_data.shape
 
     tst = loadPickle('./cifar-10-batches-py/test_batch')
     tst_encoded = encodeBatch(tst, bow)
