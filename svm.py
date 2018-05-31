@@ -9,18 +9,18 @@ from utility import loadPickle, writePickle
 
 def getTrainDataAndLabel(bow):
 
-    # Train
+     # Train
     trn1 = loadPickle('./cifar-10-batches-py/data_batch_1')
     trn2 = loadPickle('./cifar-10-batches-py/data_batch_2')
     trn3 = loadPickle('./cifar-10-batches-py/data_batch_3')
     trn4 = loadPickle('./cifar-10-batches-py/data_batch_4')
     trn5 = loadPickle('./cifar-10-batches-py/data_batch_5')
-    trn_encoded = \
-        encodeBatch(trn1, bow) + \
-        encodeBatch(trn2, bow) + \
-        encodeBatch(trn3, bow) + \
-        encodeBatch(trn4, bow) + \
-        encodeBatch(trn5, bow)
+    trn_encoded = np.concatenate((encodeBatch(trn1, bow),
+                                  encodeBatch(trn2, bow),
+                                  encodeBatch(trn3, bow),
+                                  encodeBatch(trn4, bow),
+                                  encodeBatch(trn5, bow)))
+    print trn_encoded.shape
 
     labels = \
         trn1['labels'] + \
@@ -29,7 +29,7 @@ def getTrainDataAndLabel(bow):
         trn4['labels'] + \
         trn5['labels']
 
-    return trn_encoded, labels
+    return np.array(trn_encoded), np.array(labels)
 
 
 def printOutAccuracy(model, bow, trn_path='./cifar-10-batches-py/data_batch_1',
@@ -61,7 +61,7 @@ def train(model, bow, trn_encoded, labels):
 def fineTuneHyperParam(model, bow, param_grid, trn_encoded, labels):
     grid_search = GridSearchCV(
         model, param_grid, cv=5,
-        verbose=2, n_jobs=32)
+        verbose=2, n_jobs=-1)
     # Train
     grid_search.fit(trn_encoded, labels)
 
