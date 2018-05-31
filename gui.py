@@ -5,7 +5,8 @@ import ttk
 from utility import loadPickle
 import cv2
 from navie_bayes import NaiveBayes
-from bow import encodeImage
+from bow import encodeImage, encodeGrayImage
+import numpy as np
 
 class GUI(object):
 
@@ -55,16 +56,17 @@ class GUI(object):
 
     def choose_image(self):
         file = filedialog.askopenfilename()
+        image = cv2.imread(file, cv2.IMREAD_UNCHANGED)                                   
+        result = self.selected_model.classify(image)        
+        class_label = self.classifier_labels[result]
+        print "Class label : ", class_label
+        self.class_result.config(text="Class : " + class_label)    
         img = ImageTk.PhotoImage(Image.open(file))
         self.panel.configure(image=img)
         self.panel.image = img
         print "[!] Read image", file
-        image = cv2.imread(file)
-        image = encodeImage(image, self.bow)
-        result = self.selected_model.classify(image)        
-        class_label = self.classifier_labels[result]
-        print "Class label : ", class_label
-        self.class_result.config(text="Class : " + class_label)
+        
+        
 
 
 
