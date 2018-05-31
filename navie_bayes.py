@@ -6,7 +6,7 @@ from sklearn.metrics import accuracy_score
 class NaiveBayes(object):
 
     def __init__(self, bow):
-        self.model = 
+        self.model = MultinomialNB()
         self.bow = bow
 
     def get_train_data_and_label(self):
@@ -45,8 +45,10 @@ class NaiveBayes(object):
         print '[+] Test Accuracy', accuracy_score(y_pred, tst['labels']) * 100
     
     def classify(self, img):
-        img_encode = encodeImage(img , self.bow)
-        print "[+] Image class : ", y_pred = self.model.predict(img_encode)
+        img_encode = encodeImage(img, self.bow)
+        y_pred = self.model.predict(img_encode)
+        print "[+] Image class : ", y_pred
+        return y_pred
 
 
 
