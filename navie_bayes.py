@@ -2,6 +2,7 @@ from sklearn.naive_bayes import MultinomialNB
 from bow import encodeBatch, encodeImage
 from utility import loadPickle, writePickle
 from sklearn.metrics import accuracy_score
+import numpy as np
 
 
 class NaiveBayes(object):
@@ -12,25 +13,27 @@ class NaiveBayes(object):
 
     def get_train_data_and_label(self):
         print "[+] Read data from folder cifar-10-batches-py"
-        trn1 = loadPickle('./cifar-10-batches-py/data_batch_1')
-        trn2 = loadPickle('./cifar-10-batches-py/data_batch_2')
-        trn3 = loadPickle('./cifar-10-batches-py/data_batch_3')
-        trn4 = loadPickle('./cifar-10-batches-py/data_batch_4')
-        trn5 = loadPickle('./cifar-10-batches-py/data_batch_5')
-        trn_encoded = \
-            encodeBatch(trn1, bow) + \
-            encodeBatch(trn2, bow) + \
-            encodeBatch(trn3, bow) + \
-            encodeBatch(trn4, bow) + \
-            encodeBatch(trn5, bow)
+         # Train
+    	trn1 = loadPickle('./cifar-10-batches-py/data_batch_1')
+    	trn2 = loadPickle('./cifar-10-batches-py/data_batch_2')
+    	trn3 = loadPickle('./cifar-10-batches-py/data_batch_3')
+    	trn4 = loadPickle('./cifar-10-batches-py/data_batch_4')
+    	trn5 = loadPickle('./cifar-10-batches-py/data_batch_5')
+    	trn_encoded = np.concatenate((encodeBatch(trn1, bow),
+                                  	encodeBatch(trn2, bow),
+                                  	encodeBatch(trn3, bow),
+                                  	encodeBatch(trn4, bow),
+                                  	encodeBatch(trn5, bow)))
+    	print trn_encoded.shape
 
-        labels = \
-            trn1['labels'] + \
-            trn2['labels'] + \
-            trn3['labels'] + \
-            trn4['labels'] + \
-            trn5['labels']
-        return trn_encoded, labels
+    	labels = \
+        	trn1['labels'] + \
+        	trn2['labels'] + \
+        	trn3['labels'] + \
+        	trn4['labels'] + \
+        	trn5['labels']
+
+	return np.array(trn_encoded), np.array(labels)
 
     def train(self):
         trn_encoded, labels = self.get_train_data_and_label()
