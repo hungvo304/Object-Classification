@@ -46,6 +46,7 @@ class NaiveBayes(object):
         tst_encoded = encodeBatch(tst, self.bow)
         y_pred = self.model.predict(tst_encoded)
         print '[+] Test Accuracy', accuracy_score(y_pred, tst['labels']) * 100
+        return y_pred, tst
 
     def classify(self, img):
         img_encode = encodeImage(img, self.bow)
