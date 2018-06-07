@@ -7,15 +7,15 @@ import cv2
 from navie_bayes import NaiveBayes
 from bow import encodeImage
 import numpy as np
-
+from classifier import Classifier
+from ann import ANN
 
 class GUI(object):
 
-    def __init__(self, models, class_labels, bow):
+    def __init__(self, class_labels, bow):
         self.root = Tk()
-        self.setup_gui()
-        self.models = models
-        self.selected_model = models[0]
+        self.setup_gui() 
+        self.classifier_model = Classifier(bow)       
         self.classifier_labels = class_labels
         self.bow = bow
 
@@ -32,7 +32,7 @@ class GUI(object):
         #self.train_file.bind("<Button-1>", self.choose_directory)        
 
         self.classifier = ttk.Combobox(self.root)
-        self.classifier['value'] = ("Naives Bayes", "SVM")
+        self.classifier['value'] = ("Naives Bayes", "SVM", "ANN", "Softmax Regression")
         self.classifier.bind("<<ComboboxSelected>>", self.set_selected_model)
         self.classifier.grid(row=1, column=1, padx=2, pady=4)
         self.classifier.current(0)
@@ -52,7 +52,7 @@ class GUI(object):
         self.class_result.grid(row=4, columnspan=1)        
 
     def set_selected_model(self, event):
-        self.selected_model = self.models[self.classifier.get()]
+        self.classifier_model.set_selected_classifier(self.classifier.current())
 
     def choose_directory(self, event):
         folder = filedialog.askdirectory()
@@ -64,13 +64,12 @@ class GUI(object):
         print "[!] Read image", file
         image = cv2.imread(file, cv2.IMREAD_UNCHANGED)
         row, col = image.shape[0], image.shape[1]
-        y_pred, pred_class = self.selected_model.classify(image)
+        y_pred, pred_class = self.classifier_model.classify(image)
         text = "\n"                
         result = []
         for i in range(len(y_pred[0])):
             result.append((self.classifier_labels[i], y_pred[0][i]))        
-        result = sorted(result, key=lambda x : x[1], reverse=True)
-                
+        result = sorted(result, key=lambda x : x[1], reverse=True)                
         for tup in result:
             text = text + tup[0] + " : " + str(tup[1] * 100) + "\n"
         self.class_result.config(text="Classes probability : " + text, font=("Courier", 20))        
@@ -89,9 +88,6 @@ if __name__ == '__main__':
     bow = loadPickle('./bag-of-words/bow_500').cluster_centers_
     class_labels = loadPickle(
         './cifar-10-batches-py/batches.meta')['label_names']
-    print "[+] Load set of labels : ", class_labels
-    print "[+] Load trained naive bayes model"
-    nb = loadPickle('./models/naive_bayes/multinomial_bayes_bow_500')
-    models = [nb]
-    gui = GUI(models, class_labels, bow)
+    print "[+] Load set of labels : ", class_labels           
+    gui = GUI(class_labels, bow)
     gui.run()
