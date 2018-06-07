@@ -36,6 +36,7 @@ class Evaluator(object):
         return result
     
     def draw_confusion_matrix(self, conf_matrix, classes, title="Confusion matrix"):
+        conf_matrix = np.round_(conf_matrix.astype('float') / conf_matrix.sum(axis=1)[:, np.newaxis], 2)
         plt.imshow(conf_matrix, interpolation='nearest', cmap=plt.cm.Greens)
         plt.title(title)        
         tick_index = np.arange(len(classes))
@@ -70,6 +71,5 @@ if __name__ == '__main__':
     print "Load test file"
     tests = './cifar-10-batches-py/test_batch'    
     conf_matrix = evaluator.get_confusion_matrix(nb, tests, classes)
-    result = evaluator.calculate_precision_each_class(conf_matrix, classes)
-    print result
+    #result = evaluator.calculate_precision_each_class(conf_matrix, classes)    
     evaluator.draw_confusion_matrix(conf_matrix, classes)
