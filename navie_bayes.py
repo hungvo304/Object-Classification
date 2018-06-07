@@ -40,19 +40,16 @@ class NaiveBayes(object):
         print "[+] Training model"
         self.model.fit(trn_encoded, labels)
 
-    def test_accuracy(self, tst_path='./cifar-10-batches-py/test_batch'):
-        print "[!] Calculating accuracy : "
+    def test_accuracy(self, tst_path='./cifar-10-batches-py/test_batch'):        
         tst = loadPickle(tst_path)
         tst_encoded = encodeBatch(tst, self.bow)
-        y_pred = self.model.predict(tst_encoded)
-        print '[+] Test Accuracy', accuracy_score(y_pred, tst['labels']) * 100
+        y_pred = self.model.predict(tst_encoded)        
         return y_pred, tst
 
     def classify(self, img):
         img_encode = encodeImage(img, self.bow)
         img_encode.reshape(1, -1)
-        y_pred = self.model.predict([img_encode])[0]
-        print "[+] Image class : ", y_pred
+        y_pred = self.model.predict_proba([img_encode])        
         return y_pred
 
 
