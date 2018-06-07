@@ -21,15 +21,15 @@ class GUI(object):
 
     def setup_gui(self):
 
-        self.train_label = Label(self.root, text="Train data")
-        self.train_label.grid(row=0, padx=2, pady=4)
+        #self.train_label = Label(self.root, text="Train data")
+        #self.train_label.grid(row=0, padx=2, pady=4)
 
         self.classifier_label = Label(self.root, text="Classifier")
         self.classifier_label.grid(row=1, padx=2, pady=4)
-
-        self.train_file = Text(self.root, width=30, height=1)
-        self.train_file.grid(row=0, column=1, padx=2, pady=4)
-        self.train_file.bind("<Button-1>", self.choose_directory)
+        
+        #self.train_file = Text(self.root, width=30, height=1)
+        #self.train_file.grid(row=0, column=1, padx=2, pady=4)
+        #self.train_file.bind("<Button-1>", self.choose_directory)        
 
         self.classifier = ttk.Combobox(self.root)
         self.classifier['value'] = ("Naives Bayes", "SVM")
@@ -45,8 +45,8 @@ class GUI(object):
         self.panel = Label(self.root, image=self.img)
         self.panel.grid(row=2, column=1)
 
-        self.class_result = Label(self.root, text="Class : ")
-        self.class_result.grid(row=3)
+        self.class_result = Label(self.root, text=" ")
+        self.class_result.grid(row=3, columnspan=1)
 
     def set_selected_model(self, event):
         self.selected_model = self.models[self.classifier.get()]
@@ -56,17 +56,25 @@ class GUI(object):
         self.train_file.delete("1.0", END)
         self.train_file.insert("1.0", folder.split("/")[-1])
 
-    def choose_image(self):
+    def choose_image(self):        
         file = filedialog.askopenfilename()
+        print "[!] Read image", file
         image = cv2.imread(file, cv2.IMREAD_UNCHANGED)
-        result = self.selected_model.classify(image)
-        class_label = self.classifier_labels[result]
-        print "Class label : ", class_label
-        self.class_result.config(text="Class : " + class_label)
-        img = ImageTk.PhotoImage(Image.open(file))
+        row, col = image.shape[0], image.shape[1]
+        y_pred = self.selected_model.classify(image)
+        text = "\n"                
+        result = []
+        for i in range(len(y_pred[0])):
+            result.append((self.classifier_labels[i], y_pred[0][i]))        
+        result = sorted(result, key=lambda x : x[1], reverse=True)
+                
+        for tup in result:
+            text = text + tup[0] + " : " + str(tup[1] * 100) + "\n"
+        self.class_result.config(text="Classes probability : " + text, font=("Courier", 20))        
+        img = ImageTk.PhotoImage(Image.open(file).resize((col/2, row/2), Image.ANTIALIAS))
         self.panel.configure(image=img)
         self.panel.image = img
-        print "[!] Read image", file
+       
 
     def run(self):
         self.root.mainloop()
