@@ -45,8 +45,11 @@ class GUI(object):
         self.panel = Label(self.root, image=self.img)
         self.panel.grid(row=2, column=1)
 
+        self.predict_class = Label(self.root, text = " ")
+        self.predict_class.grid(row=3, columnspan=1)
+
         self.class_result = Label(self.root, text=" ")
-        self.class_result.grid(row=3, columnspan=1)
+        self.class_result.grid(row=4, columnspan=1)        
 
     def set_selected_model(self, event):
         self.selected_model = self.models[self.classifier.get()]
@@ -61,7 +64,7 @@ class GUI(object):
         print "[!] Read image", file
         image = cv2.imread(file, cv2.IMREAD_UNCHANGED)
         row, col = image.shape[0], image.shape[1]
-        y_pred = self.selected_model.classify(image)
+        y_pred, pred_class = self.selected_model.classify(image)
         text = "\n"                
         result = []
         for i in range(len(y_pred[0])):
@@ -71,6 +74,7 @@ class GUI(object):
         for tup in result:
             text = text + tup[0] + " : " + str(tup[1] * 100) + "\n"
         self.class_result.config(text="Classes probability : " + text, font=("Courier", 20))        
+        self.predict_class.config(text="Predict class : " + self.classifier_labels[pred_class], font=("Courier", 20))
         img = ImageTk.PhotoImage(Image.open(file).resize((col/2, row/2), Image.ANTIALIAS))
         self.panel.configure(image=img)
         self.panel.image = img
