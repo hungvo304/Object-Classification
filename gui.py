@@ -27,7 +27,7 @@ class GUI(object):
 
         self.classifier = ttk.Combobox(self.root)
         self.classifier['value'] = (
-            "Naives Bayes", "SVM", "ANN", "Softmax Regression")
+            "Naives Bayes", "SVM 3rd Polynomial", "SVM RBF", "ANN", "Softmax Regression")
         self.classifier.bind("<<ComboboxSelected>>", self.set_selected_model)
         self.classifier.grid(row=1, column=1, padx=2, pady=4)
         self.classifier.current(0)
