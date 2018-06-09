@@ -46,7 +46,7 @@ class NeuralNet(object):
         acc_go_down = 0
         max_dev_acc = float('-inf')
         bestModel = None
-        for t in range(5):
+        for t in range(500):
             for iteration in range(X.shape[0] // self.N):
                 start = iteration * self.N
                 end = start + self.N
@@ -96,25 +96,25 @@ class NeuralNet(object):
 
 
 if __name__ == '__main__':
-    # # get bag of words
-    # bow = loadPickle('./bag-of-words/bow_500').cluster_centers_
-
-    # # define #-dimensions
-    # N, D_in, H, D_out = 50, 500, 1000, 10
-
-    # # create neural network
-    # ann = NeuralNet(N, D_in, H, D_out)
-
-    # # get train data
-    # trn_encoded, labels = getTrainDataAndLabel(bow)
-
-    # # train
-    # ann.fit(trn_encoded, labels)
-    # writePickle(ann, './ann_model')
+    # get bag of words
     bow = loadPickle('./bag-of-words/bow_500').cluster_centers_
-    model = loadPickle('./ann_model')
-    img = cv2.imread('./index.jpeg')
 
-    encodedImg = encodeImage(img, bow)
-    print model.predict([encodedImg])
-    print model.predict_proba([encodedImg])
+    # define #-dimensions
+    N, D_in, H, D_out = 50, 500, 1000, 10
+
+    # create neural network
+    ann = NeuralNet(N, D_in, H, D_out)
+
+    # get train data
+    trn_encoded, labels = getTrainDataAndLabel(bow)
+
+    # train
+    ann.fit(trn_encoded, labels)
+    writePickle(ann, './ann_model')
+    # bow = loadPickle('./bag-of-words/bow_500').cluster_centers_
+    # model = loadPickle('./ann_model')
+    # img = cv2.imread('./index.jpeg')
+
+    # encodedImg = encodeImage(img, bow)
+    # print model.predict([encodedImg])
+    # print model.predict_proba([encodedImg])

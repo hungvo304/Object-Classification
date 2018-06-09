@@ -8,7 +8,7 @@ from navie_bayes import NaiveBayes
 from bow import encodeImage
 import numpy as np
 from classifier import Classifier
-from ann import ANN
+from ann import *
 
 
 class GUI(object):
