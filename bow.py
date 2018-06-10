@@ -88,7 +88,7 @@ def encodeBatch(data_batch, bow):
         img = data2image(row)
         batch_encoded.append(encodeImage(img, bow))
 
-    return batch_encoded
+    return np.array(batch_encoded)
 
 
 if __name__ == '__main__':
