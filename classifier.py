@@ -3,7 +3,7 @@ from sklearn.naive_bayes import MultinomialNB
 from bow import encodeBatch, encodeImage
 from utility import loadPickle, writePickle
 from sklearn.metrics import accuracy_score
-from ann import ANN
+from ann import *
 import torch
 
 
@@ -23,17 +23,18 @@ class Classifier(object):
         self.selected_model = self.models[0]
         self.bow = bow
 
-    def set_selected_classifier(self, index):
-        print index
+    def set_selected_classifier(self, index):        
         self.selected_model = self.models[index]
 
     def test_accuracy(self, tst_path='./cifar-10-batches-py/test_batch'):
+        print "Testing : " , self.selected_model[0]
         tst = loadPickle(tst_path)
         tst_encoded = encodeBatch(tst, self.bow)
         #tst_encoded = MinMaxScaler(feature_range=(0,1)).fit(tst_encoded)
         y_pred = self.selected_model[1].predict(tst_encoded)
-        print "Test accuracy : ", accuracy_score(tst['labels'], y_pred)
-        return y_pred, tst
+        score = accuracy_score(tst['labels'], y_pred) * 100
+        print "Test accuracy : ", score
+        return y_pred, tst, score
 
     def classify(self, img):
         img_encode = encodeImage(img, self.bow)
@@ -41,3 +42,9 @@ class Classifier(object):
         y_pred = self.selected_model[1].predict_proba([img_encode])
         predict_class = self.selected_model[1].predict([img_encode])[0]
         return y_pred, predict_class
+
+if __name__=='__main__':
+    bow = loadPickle('./bag-of-words/bow_500').cluster_centers_
+    classifier = Classifier(bow)
+    classifier.set_selected_classifier(0)
+    classifier.test_accuracy()
