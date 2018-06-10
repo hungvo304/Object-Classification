@@ -9,7 +9,7 @@ from bow import encodeImage
 import numpy as np
 from classifier import Classifier
 from ann import *
-
+from evaluation import Evaluator
 
 class GUI(object):
 
@@ -19,6 +19,7 @@ class GUI(object):
         self.classifier_model = Classifier(bow)
         self.classifier_labels = class_labels
         self.bow = bow
+        self.evaluator = Evaluator(class_labels)
 
     def setup_gui(self):
 
@@ -63,14 +64,29 @@ class GUI(object):
             self.list_progress_bars.append(
                 (class_name, class_bar, percentage_label))
 
+        self.evaluate_Label = Label(self.root, text="Evaluate model", font=("Courier", 16))
+        self.evaluate_Label.grid(row=17)
+
+        self.test_selection = Text(self.root, width=40, height=1)
+        self.test_selection.grid(row=17, column=1)
+        self.test_selection.bind("<Button-1>", self.choose_file)
+
+        self.evalute_button = Button(self.root, text="Evaluate", command=self.show_confusion_matrix)
+        self.evalute_button.grid(row=17, column=2)
+
+    def show_confusion_matrix(self):
+        path = self.test_selection.get("1.0",'end-1c')
+        conf_matrix = self.evaluator.get_confusion_matrix(self.classifier_model, path)
+        self.evaluator.draw_confusion_matrix(conf_matrix, title=self.classifier_model.selected_model[0] + " confusion matrix")
+
     def set_selected_model(self, event):
         self.classifier_model.set_selected_classifier(
             self.classifier.current())
 
-    def choose_directory(self, event):
-        folder = filedialog.askdirectory()
-        self.train_file.delete("1.0", END)
-        self.train_file.insert("1.0", folder.split("/")[-1])
+    def choose_file(self, event):
+        file = filedialog.askopenfilename()
+        self.test_selection.delete("1.0", END)
+        self.test_selection.insert("1.0", file)
 
     def choose_image(self):
         file = filedialog.askopenfilename()
