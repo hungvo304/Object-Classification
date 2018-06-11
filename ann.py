@@ -46,7 +46,7 @@ class NeuralNet(object):
         acc_go_down = 0
         max_dev_acc = float('-inf')
         bestModel = None
-        for t in range(500):
+        for t in range(200):
             for iteration in range(X.shape[0] // self.N):
                 start = iteration * self.N
                 end = start + self.N
@@ -71,7 +71,7 @@ class NeuralNet(object):
                 bestModel = copy.deepcopy(self.model)
             else:
                 acc_go_down += 1
-                if acc_go_down == 20:
+                if acc_go_down == 10:
                     break
 
         self.model = copy.deepcopy(bestModel)
@@ -100,17 +100,27 @@ if __name__ == '__main__':
     bow = loadPickle('./bag-of-words/bow_500').cluster_centers_
 
     # define #-dimensions
-    N, D_in, H, D_out = 50, 500, 1000, 10
+    # N, D_in, H, D_out = 50, 500, 1000, 10
+    N, D_in, H, D_out = 50, 4096, 1000, 10
 
     # create neural network
     ann = NeuralNet(N, D_in, H, D_out)
 
     # get train data
-    trn_encoded, labels = getTrainDataAndLabel(bow)
+    # trn_encoded, labels = getTrainDataAndLabel(bow)
+    trn_encoded = loadPickle('./deepfeat/trn_encoded')
+    trn_labels = loadPickle('./deepfeat/trn_labels')
+    tst_encoded = loadPickle('./deepfeat/tst_encoded')
+    tst_labels = loadPickle('./deepfeat/tst_labels')
 
     # train
-    ann.fit(trn_encoded, labels)
-    writePickle(ann, './ann_model')
+    ann.fit(trn_encoded, trn_labels)
+    writePickle(ann, './models/ann/ann_3layer_deepfeat')
+
+    trn_pred = ann.predict(trn_encoded)
+    print 'Train accuracy:', 100 * accuracy_score(trn_pred, trn_labels)
+    tst_pred = ann.predict(tst_encoded)
+    print 'Test accuracy:', 100 * accuracy_score(tst_pred, tst_labels)
     # bow = loadPickle('./bag-of-words/bow_500').cluster_centers_
     # model = loadPickle('./ann_model')
     # img = cv2.imread('./index.jpeg')
