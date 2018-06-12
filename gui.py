@@ -50,7 +50,8 @@ class GUI(object):
 
         self.list_progress_bars = list()
         for i in range(10):
-            class_name = Label(self.root, text="Class name #" + str(i))
+            class_name = Label(
+                self.root, text="Class name #" + str(i), font=('', 20))
             class_name.grid(row=5 + i, column=0)
 
             class_bar = ttk.Progressbar(
@@ -113,14 +114,14 @@ class GUI(object):
             text="Classes probability : " + text, font=("", 14))
         self.predict_class.config(
             text="Predict class : " + self.classifier_labels[pred_class], font=("Courier", 20))
-        img = ImageTk.PhotoImage(Image.open(file).resize(
-            (col / 2, row / 2), Image.ANTIALIAS))
+        img = ImageTk.PhotoImage(Image.open(file))  # .resize(
+        #(col / 2, row / 2), Image.ANTIALIAS))
         self.panel.configure(image=img)
         self.panel.image = img
 
     def change_percentage_bar(self, progress_bar, label, percentage):
         class_name = progress_bar[0]
-        class_name.config(text=label)
+        class_name.config(text=label, font=('', 20))
 
         class_bar = progress_bar[1]
         class_bar["maximum"] = 100
@@ -128,7 +129,7 @@ class GUI(object):
 
         percentage_text = str(percentage * 100) + "%"
         percentage_label = progress_bar[2]
-        percentage_label.config(text=percentage_text)
+        percentage_label.config(text=percentage_text, font=('', 20))
 
     def run(self):
         self.root.mainloop()

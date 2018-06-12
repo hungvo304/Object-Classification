@@ -42,7 +42,7 @@ class Classifier(object):
         tst = loadPickle(tst_path)
         if self.selected_index > 4:
             tst_encoded = encodeBatch_deepfeat(tst)
-        else: 
+        else:
             tst_encoded = encodeBatch(tst, self.bow)
         #tst_encoded = MinMaxScaler(feature_range=(0,1)).fit(tst_encoded)
         y_pred = self.selected_model[1].predict(tst_encoded)
@@ -64,5 +64,5 @@ class Classifier(object):
 if __name__ == '__main__':
     bow = loadPickle('./bag-of-words/bow_500').cluster_centers_
     classifier = Classifier(bow)
-    classifier.set_selected_classifier(0)
+    classifier.set_selected_classifier(2)
     classifier.test_accuracy()
