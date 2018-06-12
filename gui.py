@@ -98,7 +98,7 @@ class GUI(object):
         print "[!] Read image", file
         image = cv2.imread(file, cv2.IMREAD_UNCHANGED)
         row, col = image.shape[0], image.shape[1]
-        y_pred, pred_class = self.classifier_model.classify(image)
+        y_pred, pred_class = self.classifier_model.classify(image, file)
         text = "\n"
         result = []
         for i in range(len(y_pred[0])):
