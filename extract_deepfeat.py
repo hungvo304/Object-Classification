@@ -1,26 +1,30 @@
 import torch
 import numpy as np
+import cv2
 from torchvision import transforms, datasets, models
 from utility import writePickle
 from PIL import Image
+from svm import data2image
 
 
-def image_loader(image_path):
+def image_loader(img):
     loader = transforms.Compose([
         transforms.RandomResizedCrop(224),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406],
                              std=[0.229, 0.224, 0.225])
     ])
-    image = Image.open(image_path)
+    cv2_im = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    # image = Image.open(image_path)
+    image = Image.fromarray(cv2_im)
     image = loader(image).float()
     image = torch.tensor(image, requires_grad=True)
     image = image.unsqueeze(0)
     return image
 
 
-def encodeImage_deepfeat(image_path):
-    image = image_loader(image_path)
+def encodeImage_deepfeat(img):
+    image = image_loader(img)
 
     model = models.alexnet(pretrained=True)
     newclassifier = torch.nn.Sequential(
@@ -29,6 +33,14 @@ def encodeImage_deepfeat(image_path):
 
     featureVector = model(image)
     return featureVector.data.numpy()[0]
+
+
+def encodeBatch_deepfeat(data_batch):
+    batch_encoded = []
+    for row in data_batch['data']:
+        img = data2image(row)
+        batch_encoded.append(encodeImage_deepfeat(img))
+    return np.array(batch_encoded)
 
 
 def extractDeepFeat(dataset):
@@ -76,4 +88,5 @@ if __name__ == '__main__':
     # tst_encoded, tst_labels = extractDeepFeat(testset)
     # writePickle(tst_encoded, './deepfeat/tst_encoded')
     # writePickle(tst_labels, './deepfeat/tst_labels')
-    encodeImage_deepfeat('./index.jpeg')
+    image = cv2.imread('./index.jpeg')
+    encodeImage_deepfeat(image)
