@@ -4,7 +4,7 @@ from bow import encodeBatch, encodeImage
 from utility import loadPickle, writePickle
 from sklearn.metrics import accuracy_score
 from ann import *
-from extract_deepfeat import encodeImage_deepfeat
+from extract_deepfeat import encodeImage_deepfeat, encodeBatch_deepfeat
 import torch
 
 
@@ -40,16 +40,19 @@ class Classifier(object):
     def test_accuracy(self, tst_path='./cifar-10-batches-py/test_batch'):
         print "Testing : ", self.selected_model[0]
         tst = loadPickle(tst_path)
-        tst_encoded = encodeBatch(tst, self.bow)
+        if self.selected_index > 4:
+            tst_encoded = encodeBatch_deepfeat(tst)
+        else: 
+            tst_encoded = encodeBatch(tst, self.bow)
         #tst_encoded = MinMaxScaler(feature_range=(0,1)).fit(tst_encoded)
         y_pred = self.selected_model[1].predict(tst_encoded)
         score = accuracy_score(tst['labels'], y_pred) * 100
         print "Test accuracy : ", score
         return y_pred, tst, score
 
-    def classify(self, img, path):
+    def classify(self, img):
         if self.selected_index > 4:
-            img_encode = encodeImage_deepfeat(path)
+            img_encode = encodeImage_deepfeat(img)
         else:
             img_encode = encodeImage(img, self.bow)
         img_encode.reshape(1, -1)
