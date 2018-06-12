@@ -4,7 +4,7 @@ import cv2
 from torchvision import transforms, datasets, models
 from utility import writePickle
 from PIL import Image
-from svm import data2image
+from bow import data2image
 
 
 def image_loader(img):
