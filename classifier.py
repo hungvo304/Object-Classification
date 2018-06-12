@@ -4,6 +4,7 @@ from bow import encodeBatch, encodeImage
 from utility import loadPickle, writePickle
 from sklearn.metrics import accuracy_score
 from ann import *
+from extract_deepfeat import encodeImage_deepfeat
 import torch
 
 
@@ -23,16 +24,18 @@ class Classifier(object):
         self.models.append(("softmax_deepfeat", loadPickle(
             './models/softmax/softmax_deepfeat')))
         self.models.append(("naive_bayes_deepfeat", loadPickle(
-            './models/naive_bayes/bayes_deepfeat')))
+            './models/naive_bayes/multinomial_bayes_deepfeat')))
         self.models.append(("linearsvm_deepfeat",
-                            loadPickle('./models/svm/svm_deepfeat')))
+                            loadPickle('./models/svm/linearsvm_deepfeat')))
         self.models.append(("ann_deepfeat", loadPickle(
             './models/ann/ann_3layer_deepfeat')))
         self.selected_model = self.models[0]
+        self.selected_index = 0
         self.bow = bow
 
     def set_selected_classifier(self, index):
         self.selected_model = self.models[index]
+        self.selected_index = index
 
     def test_accuracy(self, tst_path='./cifar-10-batches-py/test_batch'):
         print "Testing : ", self.selected_model[0]
@@ -44,8 +47,11 @@ class Classifier(object):
         print "Test accuracy : ", score
         return y_pred, tst, score
 
-    def classify(self, img):
-        img_encode = encodeImage(img, self.bow)
+    def classify(self, img, path):
+        if self.selected_index > 4:
+            img_encode = encodeImage_deepfeat(path)
+        else:
+            img_encode = encodeImage(img, self.bow)
         img_encode.reshape(1, -1)
         y_pred = self.selected_model[1].predict_proba([img_encode])
         predict_class = self.selected_model[1].predict([img_encode])[0]
