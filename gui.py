@@ -11,6 +11,7 @@ from classifier import Classifier
 from ann import *
 from evaluation import Evaluator
 
+
 class GUI(object):
 
     def __init__(self, class_labels, bow):
@@ -28,7 +29,7 @@ class GUI(object):
 
         self.classifier = ttk.Combobox(self.root)
         self.classifier['value'] = (
-            "Naives Bayes", "SVM 3rd Polynomial", "SVM RBF", "ANN", "Softmax Regression")
+            "Naives Bayes", "SVM 3rd Polynomial", "SVM RBF", "ANN", "Softmax Regression", "Softmax Regression Deep Feature", "Naives Bayes Deep Feature", "Linear SVM Deep Feature", "ANN Deep Feature")
         self.classifier.bind("<<ComboboxSelected>>", self.set_selected_model)
         self.classifier.grid(row=1, column=1, padx=2, pady=4)
         self.classifier.current(0)
@@ -64,20 +65,24 @@ class GUI(object):
             self.list_progress_bars.append(
                 (class_name, class_bar, percentage_label))
 
-        self.evaluate_Label = Label(self.root, text="Evaluate model", font=("Courier", 16))
+        self.evaluate_Label = Label(
+            self.root, text="Evaluate model", font=("Courier", 16))
         self.evaluate_Label.grid(row=17)
 
         self.test_selection = Text(self.root, width=40, height=1)
         self.test_selection.grid(row=17, column=1)
         self.test_selection.bind("<Button-1>", self.choose_file)
 
-        self.evalute_button = Button(self.root, text="Evaluate", command=self.show_confusion_matrix)
+        self.evalute_button = Button(
+            self.root, text="Evaluate", command=self.show_confusion_matrix)
         self.evalute_button.grid(row=17, column=2)
 
     def show_confusion_matrix(self):
-        path = self.test_selection.get("1.0",'end-1c')
-        conf_matrix = self.evaluator.get_confusion_matrix(self.classifier_model, path)
-        self.evaluator.draw_confusion_matrix(conf_matrix, title=self.classifier_model.selected_model[0] + " confusion matrix")
+        path = self.test_selection.get("1.0", 'end-1c')
+        conf_matrix = self.evaluator.get_confusion_matrix(
+            self.classifier_model, path)
+        self.evaluator.draw_confusion_matrix(
+            conf_matrix, title=self.classifier_model.selected_model[0] + " confusion matrix")
 
     def set_selected_model(self, event):
         self.classifier_model.set_selected_classifier(
