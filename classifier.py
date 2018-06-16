@@ -26,7 +26,7 @@ class Classifier(object):
         self.models.append(("naive_bayes_deepfeat", loadPickle(
             './models/naive_bayes/multinomial_bayes_deepfeat')))
         self.models.append(("linearsvm_deepfeat",
-                            loadPickle('./models/svm/linearsvm_deepfeat')))
+                            loadPickle('./models/svm/linearsvm_deepfeat_proba')))
         self.models.append(("ann_deepfeat", loadPickle(
             './models/ann/ann_3layer_deepfeat')))
         self.selected_model = self.models[0]
