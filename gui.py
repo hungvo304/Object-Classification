@@ -11,6 +11,7 @@ from classifier import Classifier
 from ann import *
 from evaluation import Evaluator
 
+custom_font = ("Courier", 15)
 
 class GUI(object):
 
@@ -24,10 +25,10 @@ class GUI(object):
 
     def setup_gui(self):
 
-        self.classifier_label = Label(self.root, text="Classifier")
+        self.classifier_label = Label(self.root, text="Classifier", font=custom_font)
         self.classifier_label.grid(row=1, padx=2, pady=4)
 
-        self.classifier = ttk.Combobox(self.root)
+        self.classifier = ttk.Combobox(self.root, width=40)
         self.classifier['value'] = (
             "Naives Bayes", "SVM 3rd Polynomial", "SVM RBF", "ANN", "Softmax Regression", "Softmax Regression Deep Feature", "Naives Bayes Deep Feature", "Linear SVM Deep Feature", "ANN Deep Feature")
         self.classifier.bind("<<ComboboxSelected>>", self.set_selected_model)
@@ -42,7 +43,7 @@ class GUI(object):
         self.panel = Label(self.root, image=self.img)
         self.panel.grid(row=2, column=1)
 
-        self.predict_class = Label(self.root, text=" ")
+        self.predict_class = Label(self.root, text=" ", font=custom_font)
         self.predict_class.grid(row=3, columnspan=1)
 
         self.class_result = Label(self.root, text=" ")
@@ -51,7 +52,7 @@ class GUI(object):
         self.list_progress_bars = list()
         for i in range(10):
             class_name = Label(
-                self.root, text="Class name #" + str(i), font=('', 20))
+                self.root, text="Class name #" + str(i), font=custom_font)
             class_name.grid(row=5 + i, column=0)
 
             class_bar = ttk.Progressbar(
@@ -61,29 +62,29 @@ class GUI(object):
             class_bar.grid(row=5 + i, column=1)
 
             percentage_text = "0%"
-            percentage_label = Label(self.root, text=percentage_text)
+            percentage_label = Label(self.root, text=percentage_text, font=custom_font)
             percentage_label.grid(row=5 + i, column=2)
             self.list_progress_bars.append(
                 (class_name, class_bar, percentage_label))
 
-        self.evaluate_Label = Label(
-            self.root, text="Evaluate model", font=("Courier", 16))
-        self.evaluate_Label.grid(row=17)
+#        self.evaluate_Label = Label(
+#            self.root, text="Evaluate model", font=("Courier", 16))
+#        self.evaluate_Label.grid(row=17)
 
-        self.test_selection = Text(self.root, width=40, height=1)
-        self.test_selection.grid(row=17, column=1)
-        self.test_selection.bind("<Button-1>", self.choose_file)
+#        self.test_selection = Text(self.root, width=40, height=1)
+#        self.test_selection.grid(row=17, column=1)
+#        self.test_selection.bind("<Button-1>", self.choose_file)
+#
+#        self.evalute_button = Button(
+#            self.root, text="Evaluate", command=self.show_confusion_matrix)
+#        self.evalute_button.grid(row=17, column=2)
 
-        self.evalute_button = Button(
-            self.root, text="Evaluate", command=self.show_confusion_matrix)
-        self.evalute_button.grid(row=17, column=2)
-
-    def show_confusion_matrix(self):
-        path = self.test_selection.get("1.0", 'end-1c')
-        conf_matrix = self.evaluator.get_confusion_matrix(
-            self.classifier_model, path)
-        self.evaluator.draw_confusion_matrix(
-            conf_matrix, title=self.classifier_model.selected_model[0] + " confusion matrix")
+#    def show_confusion_matrix(self):
+#        path = self.test_selection.get("1.0", 'end-1c')
+#        conf_matrix = self.evaluator.get_confusion_matrix(
+#            self.classifier_model, path)
+#        self.evaluator.draw_confusion_matrix(
+#            conf_matrix, title=self.classifier_model.selected_model[0] + " confusion matrix")
 
     def set_selected_model(self, event):
         self.classifier_model.set_selected_classifier(
@@ -111,9 +112,9 @@ class GUI(object):
                 self.list_progress_bars[i], result[i][0], result[i][1])
 
         self.class_result.config(
-            text="Classes probability : " + text, font=("", 14))
+            text="Classes probability : " + text, font=custom_font)
         self.predict_class.config(
-            text="Predict class : " + self.classifier_labels[pred_class], font=("Courier", 20))
+            text="Predict class : " + self.classifier_labels[pred_class], font=custom_font)
         img = ImageTk.PhotoImage(Image.open(file))  # .resize(
         #(col / 2, row / 2), Image.ANTIALIAS))
         self.panel.configure(image=img)
@@ -121,7 +122,7 @@ class GUI(object):
 
     def change_percentage_bar(self, progress_bar, label, percentage):
         class_name = progress_bar[0]
-        class_name.config(text=label, font=('', 20))
+        class_name.config(text=label, font=custom_font)
 
         class_bar = progress_bar[1]
         class_bar["maximum"] = 100
@@ -129,7 +130,7 @@ class GUI(object):
 
         percentage_text = str(percentage * 100) + "%"
         percentage_label = progress_bar[2]
-        percentage_label.config(text=percentage_text, font=('', 20))
+        percentage_label.config(text=percentage_text, font=custom_font)
 
     def run(self):
         self.root.mainloop()
