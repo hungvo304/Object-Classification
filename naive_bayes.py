@@ -69,3 +69,19 @@ if __name__ == '__main__':
     bayes.test_accuracy()
     print "Model : ", bayes.model
     writePickle(bayes.model, './models/naive_bayes/multinomial_bayes_bow_500')
+
+#naive bayes with deep_feature
+    trn_encoded = loadPickle('./deepfeat/trn_encoded')
+    trn_labels = loadPickle('./deepfeat/trn_labels')
+    tst_encoded = loadPickle('./deepfeat/tst_encoded')
+    tst_labels = loadPickle('./deepfeat/tst_labels')
+
+    bayes = MultinomialNB()
+    bayes.fit(trn_encoded, trn_labels)
+
+    trn_pred = bayes.predict(trn_encoded)
+    print 'Train accuracy:', 100 * accuracy_score(trn_pred, trn_labels)
+    tst_pred = bayes.predict(tst_encoded)
+    print 'Test accuracy:', 100 * accuracy_score(tst_pred, tst_labels)
+
+    writePickle(bayes, './models/naive_bayes/bayes_deepfeat')
